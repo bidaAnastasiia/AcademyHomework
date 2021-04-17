@@ -1,6 +1,7 @@
 import hashlib
-
-from fastapi import FastAPI, Request, status, Response
+from datetime import date, timedelta
+from fastapi import FastAPI, Request, Response, status
+from pydantic import BaseModel
 
 app = FastAPI()
 
@@ -42,3 +43,20 @@ async def auth_method(password: str = "", password_hash: str = ""):
     if not password or not password_hash:
         statusCode = status.HTTP_401_UNAUTHORIZED
     return Response(status_code=statusCode)
+
+
+class User(BaseModel):
+    name: str
+    surname: str
+
+
+i = 0
+
+
+@app.post("/register", status_code=status.HTTP_201_CREATED)
+async def register_method(user: User):
+    global i
+    i += 1
+    return {"id": i, "name": user.name, "surname": user.surname,
+            "register_date": date.today().strftime("%Y-%m-%d"),
+            "vaccination_date": date.today()+timedelta(len(user.name + user.surname))}
