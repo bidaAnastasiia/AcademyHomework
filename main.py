@@ -39,4 +39,6 @@ async def auth_method(password: str = "", password_hash: str = ""):
     statusCode = status.HTTP_401_UNAUTHORIZED
     if password_hash == hashlib.sha512(password.encode('utf-8')).hexdigest():
         statusCode = status.HTTP_204_NO_CONTENT
+    if not password or not password_hash:
+        statusCode = status.HTTP_401_UNAUTHORIZED
     return Response(status_code=statusCode)
