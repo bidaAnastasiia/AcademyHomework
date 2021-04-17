@@ -57,7 +57,10 @@ i = 0
 async def register_method(user: User):
     global i
     i += 1
-    print(user.name + user.surname)
+    bufname = ''.join(symbol for symbol in user.name if symbol.isalpha())
+    bufsurname = ''.join(symbol for symbol in user.surname if symbol.isalpha())
+    print(bufname + bufsurname)
+    delta = timedelta(len(bufname + bufsurname))
     return {"id": i, "name": user.name, "surname": user.surname,
             "register_date": date.today().strftime("%Y-%m-%d"),
-            "vaccination_date": date.today()+timedelta(len(user.name + user.surname))}
+            "vaccination_date": date.today()+delta}
