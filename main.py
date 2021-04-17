@@ -57,6 +57,7 @@ i = 0
 async def register_method(user: User):
     global i
     i += 1
+    print(user.name + user.surname)
     return {"id": i, "name": user.name, "surname": user.surname,
             "register_date": date.today().strftime("%Y-%m-%d"),
             "vaccination_date": date.today()+timedelta(len(user.name + user.surname))}
