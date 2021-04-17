@@ -79,4 +79,4 @@ async def get_patient(id: int):
     if id >= len(patient_list):
         return Response(status_code=status.HTTP_404_NOT_FOUND)
     else:
-        return patient_list[id]
+        return patient_list[id-1]
