@@ -34,8 +34,8 @@ async def show_methodDel(request: Request):
 async def show_methodOpt(request: Request):
     return {"method": request.method}
 
-@app.get("/auth")
-async def auth_method(password: str, password_hash: str):
+@app.get("/auth", status_code=status.HTTP_401_UNAUTHORIZED)
+async def auth_method(password: str = "", password_hash: str = ""):
     statusCode = status.HTTP_401_UNAUTHORIZED
     if password_hash == hashlib.sha512(password.encode('utf-8')).hexdigest():
         statusCode = status.HTTP_204_NO_CONTENT
