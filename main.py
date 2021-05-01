@@ -33,7 +33,7 @@ def login(response: Response, credentials: HTTPBasicCredentials = Depends(securi
 
 
 
-@app.post("/login_token")
+@app.post("/login_token", status_code=201)
 def login(credentials: HTTPBasicCredentials = Depends(security)):
     if credentials.username != "4dm1n" or credentials.password != "NotSoSecurePa$$":
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
