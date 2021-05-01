@@ -36,8 +36,8 @@ def login(response: Response, credentials: HTTPBasicCredentials = Depends(securi
         #     app.access_tokens = app.access_tokens[1:]
         if len(app.token_values) < 3:
             app.access_tokens.append(session_token)
-        print("GENERATE SESSION: "+ session_token)
-        response.set_cookie(key="session_token", value=session_token)
+            print("GENERATE SESSION: "+ session_token)
+            response.set_cookie(key="session_token", value=session_token)
 
 
 @app.post("/login_token", status_code=201)
@@ -51,8 +51,8 @@ def login(credentials: HTTPBasicCredentials = Depends(security)):
         #     app.token_values = app.token_values[1:]
         if len(app.token_values) < 3:
             app.token_values.append(token_value)
-        print("GENERATE TOKEN: " + token_value)
-        return {"token": token_value}
+            print("GENERATE TOKEN: " + token_value)
+            return {"token": token_value}
 
 
 @app.get("/welcome_session")
