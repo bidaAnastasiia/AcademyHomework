@@ -97,7 +97,7 @@ def delete_token(token: str = "default", format: str = ""):
         return response
 
 
-@app.get("logged_out")
+@app.get("/logged_out")
 def logged_out(request: Request,format:str = ""):
     if format == "json":
         return {"message": "Logged out!"}
