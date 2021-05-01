@@ -12,8 +12,8 @@ app = FastAPI()
 templates = Jinja2Templates(directory="templates")
 security = HTTPBasic()
 app.secret_key = "dfhbsrjke463gjgbhfr43yhygf76jkn"
-app.access_tokens = ""
-app.token_values = ""
+app.access_tokens = []
+app.token_values = []
 
 @app.get("/")
 async def read_root():
@@ -32,8 +32,8 @@ def login(response: Response, credentials: HTTPBasicCredentials = Depends(securi
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
     else:
         session_token = hashlib.sha256(f"{credentials.username}{credentials.password}{app.secret_key}".encode()).hexdigest()
-        app.access_tokens = session_token
-        print("GENERATE SESSION: "+ app.access_tokens)
+        app.access_tokens.append(session_token)
+        print("GENERATE SESSION: "+ session_token)
         response.set_cookie(key="session_token", value=session_token)
 
 
@@ -43,15 +43,16 @@ def login(credentials: HTTPBasicCredentials = Depends(security)):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
     else:
         letters = string.ascii_lowercase
-        app.token_values = ''.join(random.choice(letters) for i in range(10))
-        print("GENERATE TOKEN: " + app.token_values)
-        return {"token": app.token_values}
+        token_value = ''.join(random.choice(letters) for i in range(10))
+        app.token_values.append(token_value)
+        print("GENERATE TOKEN: " + token_value)
+        return {"token": token_value}
 
 
 @app.get("/welcome_session")
 def welcome(*, request: Request, session_token: str = Cookie(None), format: str = ""):
-    if session_token != app.access_tokens:
-        print("SESSION: " + app.access_tokens)
+    if session_token not in app.access_tokens:
+        print("SESSION: " + session_token)
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
     else:
         if format == "json":
@@ -64,8 +65,8 @@ def welcome(*, request: Request, session_token: str = Cookie(None), format: str 
 
 @app.get("/welcome_token")
 def welcome(*,request: Request, token: str = "default", format: str = ""):
-    if token != app.token_values:
-        print("TOKEN: " + app.token_values)
+    if token not in app.token_values:
+        print("TOKEN: " + token)
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
     else:
         if format == "json":
