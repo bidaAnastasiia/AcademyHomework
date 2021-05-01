@@ -31,7 +31,9 @@ def login(response: Response, credentials: HTTPBasicCredentials = Depends(securi
     if credentials.username != "4dm1n" or credentials.password != "NotSoSecurePa$$":
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
     else:
-        session_token = hashlib.sha256(f"{credentials.username}{credentials.password}{app.secret_key}".encode()).hexdigest()
+        letters = string.ascii_lowercase
+        secret_key = ''.join(random.choice(letters) for i in range(10))
+        session_token = hashlib.sha256(f"{credentials.username}{credentials.password}{secret_key}".encode()).hexdigest()
         if len(app.access_tokens) == 3:
             app.access_tokens = app.access_tokens[1:]
         app.access_tokens.append(session_token)
