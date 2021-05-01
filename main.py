@@ -22,13 +22,14 @@ def hello_html(request: Request):
         "request": request, "today_date": date.today()})
 
 
-@app.post("/login_session")
+@app.post("/login_session", status_code=201)
 def login(response: Response, credentials: HTTPBasicCredentials = Depends(security)):
     if credentials.username != "4dm1n" or credentials.password != "NotSoSecurePa$$":
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
     else:
         session_token = hashlib.sha256(f"{credentials.username}{credentials.password}{app.secret_key}".encode()).hexdigest()
         response.set_cookie(key="session_token", value=session_token)
+
 
 
 
