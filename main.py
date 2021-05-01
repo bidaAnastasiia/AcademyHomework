@@ -33,6 +33,7 @@ def login(response: Response, credentials: HTTPBasicCredentials = Depends(securi
     else:
         session_token = hashlib.sha256(f"{credentials.username}{credentials.password}{app.secret_key}".encode()).hexdigest()
         app.access_tokens = session_token
+        print("GENERATE SESSION: "+ app.access_tokens)
         response.set_cookie(key="session_token", value=session_token)
 
 
@@ -43,6 +44,7 @@ def login(credentials: HTTPBasicCredentials = Depends(security)):
     else:
         letters = string.ascii_lowercase
         app.token_values = ''.join(random.choice(letters) for i in range(10))
+        print("GENERATE TOKEN: " + app.token_values)
         return {"token": app.token_values}
 
 
