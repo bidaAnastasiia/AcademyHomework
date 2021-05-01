@@ -4,6 +4,7 @@ from fastapi import FastAPI, Request, Response, status, Depends, HTTPException, 
 from pydantic import BaseModel
 from fastapi.templating import Jinja2Templates
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
+from starlette.responses import PlainTextResponse
 
 app = FastAPI()
 templates = Jinja2Templates(directory="templates")
@@ -51,7 +52,7 @@ def welcome(*, request: Request, session_token: str = Cookie(None), format: str 
         elif format == "html":
             return templates.TemplateResponse("welcome.html.j2", {"request": request})
         else:
-            return "Welcome!"
+            return PlainTextResponse("Welcome!")
 
 
 @app.get("/welcome_token")
@@ -64,7 +65,7 @@ def welcome(*,request: Request, token: str = "default", format: str = ""):
         elif format == "html":
             return templates.TemplateResponse("welcome.html.j2", {"request": request})
         else:
-            return "Welcome!"
+            return PlainTextResponse("Welcome!")
 
 
 
