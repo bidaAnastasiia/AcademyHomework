@@ -9,7 +9,7 @@ app = FastAPI()
 templates = Jinja2Templates(directory="templates")
 security = HTTPBasic()
 app.secret_key = "dfhbsrjke463gjgbhfr43yhygf76jkn"
-app.access_tokens = []
+app.access_tokens = ""
 
 @app.get("/")
 async def read_root():
@@ -28,9 +28,8 @@ def login(response: Response, credentials: HTTPBasicCredentials = Depends(securi
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
     else:
         session_token = hashlib.sha256(f"{credentials.username}{credentials.password}{app.secret_key}".encode()).hexdigest()
+        app.access_tokens = session_token
         response.set_cookie(key="session_token", value=session_token)
-
-
 
 
 @app.post("/login_token", status_code=201)
@@ -40,6 +39,32 @@ def login(credentials: HTTPBasicCredentials = Depends(security)):
     else:
         token_value = "token value"
         return {"token": token_value}
+
+
+@app.get("/welcome_session")
+def welcome(*, request: Request, session_token: str = Cookie(None), format: str = ""):
+    if session_token != app.access_tokens:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
+    else:
+        if format == "json":
+            return {"message": "Welcome!"}
+        elif format == "html":
+            return templates.TemplateResponse("welcome.html.j2", {"request": request})
+        else:
+            return "Welcome!"
+
+
+@app.get("/welcome_token")
+def welcome(*,request: Request, token: str = "default", format: str = ""):
+    if token != app.access_tokens:
+        raise  HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
+    else:
+        if format == "json":
+            return {"message": "Welcome!"}
+        elif format == "html":
+            return templates.TemplateResponse("welcome.html.j2", {"request": request})
+        else:
+            return "Welcome!"
 
 
 
