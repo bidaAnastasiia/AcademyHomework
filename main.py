@@ -77,27 +77,27 @@ def welcome(*,request: Request, token: str = "default", format: str = ""):
             return PlainTextResponse("Welcome!")
 
 
-@app.delete("/logout_session", status_code=302)
+@app.delete("/logout_session")
 def delete_session(session_token: str = Cookie(None), format: str = ""):
     if session_token not in app.access_tokens:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
     else:
         app.access_tokens.remove(session_token)
-        response = RedirectResponse(url='/logged_out?format='+format)
+        response = RedirectResponse(url='/logged_out?format='+format,  status_code=status.HTTP_302_FOUND)
         return response
 
 
-@app.delete("/logout_token", status_code=302)
+@app.delete("/logout_token")
 def delete_token(token: str = "default", format: str = ""):
     if token not in app.token_values:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
     else:
         app.token_values.remove(token)
-        response = RedirectResponse(url='/logged_out?format=' + format)
+        response = RedirectResponse(url='/logged_out?format=' + format, status_code=status.HTTP_302_FOUND)
         return response
 
 
-@app.get("logged_out", status_code=200)
+@app.get("logged_out")
 def logged_out(request: Request,format:str = ""):
     if format == "json":
         return {"message": "Logged out!"}
