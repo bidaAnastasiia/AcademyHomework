@@ -83,7 +83,7 @@ def delete_session(session_token: str = Cookie(None), format: str = ""):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
     else:
         app.access_tokens.remove(session_token)
-        return logged_out(format)
+        logged_out(format)
 
 
 @app.delete("/logout_token", status_code=302)
@@ -92,10 +92,10 @@ def delete_token(token: str = "default", format: str = ""):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
     else:
         app.token_values.remove(token)
-        return logged_out(format)
+        logged_out(format)
 
 
-@app.get("logged_out")
+@app.get("logged_out", status_code=200)
 def logged_out(format:str = ""):
     if format == "json":
         return {"message": "Logged out!"}
@@ -103,7 +103,6 @@ def logged_out(format:str = ""):
         return templates.TemplateResponse("l_out.html.j2")
     else:
         return PlainTextResponse("Logged out!")
-
 
 
 @app.get("/method", status_code=200)
