@@ -98,11 +98,11 @@ def delete_token(token: str = "default", format: str = ""):
 
 
 @app.get("logged_out", status_code=200)
-def logged_out(format:str = ""):
+def logged_out(request: Request,format:str = ""):
     if format == "json":
         return {"message": "Logged out!"}
     elif format == "html":
-        return templates.TemplateResponse("l_out.html.j2")
+        return templates.TemplateResponse("l_out.html.j2", {"request": request})
     else:
         return PlainTextResponse("Logged out!")
 
