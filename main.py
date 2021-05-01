@@ -4,7 +4,7 @@ from fastapi import FastAPI, Request, Response, status, Depends, HTTPException, 
 from pydantic import BaseModel
 from fastapi.templating import Jinja2Templates
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
-from starlette.responses import PlainTextResponse
+from starlette.responses import PlainTextResponse, RedirectResponse
 import random
 import string
 
@@ -83,7 +83,8 @@ def delete_session(session_token: str = Cookie(None), format: str = ""):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
     else:
         app.access_tokens.remove(session_token)
-        logged_out(format)
+        response = RedirectResponse(url='/logged_out?format='+format)
+        return response
 
 
 @app.delete("/logout_token", status_code=302)
@@ -92,7 +93,8 @@ def delete_token(token: str = "default", format: str = ""):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
     else:
         app.token_values.remove(token)
-        logged_out(format)
+        response = RedirectResponse(url='/logged_out?format=' + format)
+        return response
 
 
 @app.get("logged_out", status_code=200)
