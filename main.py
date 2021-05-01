@@ -5,12 +5,15 @@ from pydantic import BaseModel
 from fastapi.templating import Jinja2Templates
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from starlette.responses import PlainTextResponse
+import random
+import string
 
 app = FastAPI()
 templates = Jinja2Templates(directory="templates")
 security = HTTPBasic()
 app.secret_key = "dfhbsrjke463gjgbhfr43yhygf76jkn"
 app.access_tokens = ""
+app.token_values = ""
 
 @app.get("/")
 async def read_root():
@@ -38,8 +41,9 @@ def login(credentials: HTTPBasicCredentials = Depends(security)):
     if credentials.username != "4dm1n" or credentials.password != "NotSoSecurePa$$":
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
     else:
-        token_value = "token value"
-        return {"token": token_value}
+        letters = string.ascii_lowercase
+        app.token_values = ''.join(random.choice(letters) for i in range(10))
+        return {"token": app.token_values}
 
 
 @app.get("/welcome_session")
@@ -57,7 +61,7 @@ def welcome(*, request: Request, session_token: str = Cookie(None), format: str 
 
 @app.get("/welcome_token")
 def welcome(*,request: Request, token: str = "default", format: str = ""):
-    if token != app.access_tokens:
+    if token != app.token_values:
         raise  HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
     else:
         if format == "json":
