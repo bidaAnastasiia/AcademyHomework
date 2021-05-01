@@ -1,12 +1,15 @@
 import hashlib
 from datetime import date, timedelta
-from fastapi import FastAPI, Request, Response, status
+from fastapi import FastAPI, Request, Response, status, Depends, HTTPException, Cookie
 from pydantic import BaseModel
 from fastapi.templating import Jinja2Templates
+from fastapi.security import HTTPBasic, HTTPBasicCredentials
 
 app = FastAPI()
 templates = Jinja2Templates(directory="templates")
-
+security = HTTPBasic()
+app.secret_key = "dfhbsrjke463gjgbhfr43yhygf76jkn"
+app.access_tokens = []
 
 @app.get("/")
 async def read_root():
@@ -17,6 +20,26 @@ async def read_root():
 def hello_html(request: Request):
     return templates.TemplateResponse("index.html.j2", {
         "request": request, "today_date": date.today()})
+
+
+@app.post("/login_session")
+def login(response: Response, credentials: HTTPBasicCredentials = Depends(security)):
+    if credentials.username != "4dm1n" or credentials.password != "NotSoSecurePa$$":
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
+    else:
+        session_token = hashlib.sha256(f"{credentials.username}{credentials.password}{app.secret_key}".encode()).hexdigest()
+        response.set_cookie(key="session_token", value=session_token)
+
+
+
+@app.post("/login_token")
+def login(credentials: HTTPBasicCredentials = Depends(security)):
+    if credentials.username != "4dm1n" or credentials.password != "NotSoSecurePa$$":
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
+    else:
+        token_value = "token value"
+        return {"token": token_value}
+
 
 
 @app.get("/method", status_code=200)
