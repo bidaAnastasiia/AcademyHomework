@@ -32,9 +32,10 @@ def login(response: Response, credentials: HTTPBasicCredentials = Depends(securi
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
     else:
         session_token = hashlib.sha256(f"{credentials.username}{credentials.password}{app.secret_key}".encode()).hexdigest()
-        if len(app.access_tokens) == 3:
-            app.access_tokens = app.access_tokens[1:]
-        app.access_tokens.append(session_token)
+        # if len(app.access_tokens) == 3:
+        #     app.access_tokens = app.access_tokens[1:]
+        if len(app.token_values) < 3:
+            app.access_tokens.append(session_token)
         print("GENERATE SESSION: "+ session_token)
         response.set_cookie(key="session_token", value=session_token)
 
@@ -46,9 +47,10 @@ def login(credentials: HTTPBasicCredentials = Depends(security)):
     else:
         letters = string.ascii_lowercase
         token_value = ''.join(random.choice(letters) for i in range(10))
-        if len(app.token_values) == 3:
-            app.token_values = app.token_values[1:]
-        app.token_values.append(token_value)
+        # if len(app.token_values) == 3:
+        #     app.token_values = app.token_values[1:]
+        if len(app.token_values) < 3:
+            app.token_values.append(token_value)
         print("GENERATE TOKEN: " + token_value)
         return {"token": token_value}
 
