@@ -2,13 +2,21 @@ import hashlib
 from datetime import date, timedelta
 from fastapi import FastAPI, Request, Response, status
 from pydantic import BaseModel
+from fastapi.templating import Jinja2Templates
 
 app = FastAPI()
+templates = Jinja2Templates(directory="templates")
 
 
 @app.get("/")
 async def read_root():
     return {'message': 'Hello world!'}
+
+
+@app.get("/hello")
+def hello_html(request: Request):
+    return templates.TemplateResponse("index.html.j2", {
+        "request": request, "today_date": date.today()})
 
 
 @app.get("/method", status_code=200)
