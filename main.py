@@ -87,7 +87,7 @@ async def products(product_id: int):
                                            "= Orders.CustomerID WHERE Products.ProductID = ? ORDER BY Orders.OrderId",
                                            (product_id, )).fetchall()
 
-        orders = [{"id": order[1], "customer":order[2], "quantity": order[3], "total_price":order[4]}
+        orders = [{"id": order[1], "customer":order[2], "quantity": round(order[3], 2), "total_price":round(order[4], 2)}
                   for order in orders]
         return {"orders": orders}
 
