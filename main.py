@@ -77,9 +77,11 @@ async def products(product_id: int):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
     else:
         orders = app.db_connection.execute("SELECT Products.ProductID, Orders.OrderId,Customers.CompanyName, "
-                                           "[Order Details].Quantity, [Order Details].Quantity*[Order "
-                                           "Details].UnitPrice "
-                                           "as total_price FROM [Order Details] JOIN Orders ON Orders.OrderID "
+                                           "[Order Details].Quantity, "
+                                           "[Order Details].Quantity*[Order Details].UnitPrice-"
+                                           "([Order Details].Discount*[Order Details].Quantity"
+                                           "*[Order Details].UnitPrice)as total_price "
+                                           "FROM [Order Details] JOIN Orders ON Orders.OrderID "
                                            "= [Order Details].OrderID JOIN Products ON Products.ProductID "
                                            "= [Order Details].ProductID JOIN Customers ON Customers.CustomerID "
                                            "= Orders.CustomerID WHERE Products.ProductID = ? ORDER BY Orders.OrderId",
