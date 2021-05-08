@@ -37,7 +37,7 @@ async def read_root():
 
 @app.get("/categories")
 async def products():
-    categories = app.db_connection.execute("SELECT CategoryID, CategoryName FROM Categories").fetchall()
+    categories = app.db_connection.execute("SELECT CategoryID, CategoryName FROM Categories ORDER BY CategoryID").fetchall()
     categories = [{"id": category[0], "name": category[1]} for category in categories]
     return {
         "categories": categories
@@ -47,7 +47,7 @@ async def products():
 @app.get("/customers")
 async def products():
     customers = app.db_connection. \
-        execute("SELECT CustomerID, CompanyName, Address, PostalCode, City, Country FROM Customers").fetchall()
+        execute("SELECT CustomerID, CompanyName, Address, PostalCode, City, Country FROM Customers ORDER BY CustomerID").fetchall()
     customers = [
         {"id": customer[0], "name": customer[1], "full_address": ' '.join(filter(None, customer[2:]))}
         for customer in customers]
