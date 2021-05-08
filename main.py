@@ -49,8 +49,7 @@ async def products():
     customers = app.db_connection. \
         execute("SELECT CustomerID, CompanyName, Address, PostalCode, City, Country FROM Customers").fetchall()
     customers = [
-        {"id": customer[0], "name": customer[1], "full_address": str(customer[2]) + " " + str(customer[3]) + " "
-                                                                 + str(customer[4]) + " " + str(customer[5])}
+        {"id": customer[0], "name": customer[1], "full_address": ' '.join(filter(None, customer[2:]))}
         for customer in customers]
     return {
         "customers": customers
