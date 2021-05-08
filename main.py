@@ -55,7 +55,7 @@ async def add_category(category: Category):
     )
     app.db_connection.commit()
     category_id = cursor.lastrowid
-    print("POST ID" +category_id +"  NAME: " +category.name)
+    print("POST ID" +str(category_id) +"  NAME: " +category.name)
     return {
         "id": category_id,
         "name": category.name
@@ -73,7 +73,7 @@ async def update_category(category_id: int, category: Category):
                 category.name, category_id)
         )
         app.db_connection.commit()
-        print("PUT ID" +category_id +"  NAME: " + category.name)
+        print("PUT ID" +str(category_id) +"  NAME: " + category.name)
         return {
             "id": category_id,
             "name": category.name
