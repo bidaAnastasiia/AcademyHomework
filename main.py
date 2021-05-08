@@ -47,9 +47,11 @@ async def products():
 @app.get("/customers")
 async def products():
     customers = app.db_connection. \
-        execute("SELECT CustomerID, CompanyName, Address, PostalCode, City, Country FROM Customers ORDER BY CustomerID").fetchall()
+        execute("SELECT CustomerID, CompanyName, coalesce(Address,'') || ' ' || coalesce(PostalCode,'') || ' ' "
+                "|| coalesce(City,'') || ' ' || coalesce(Country,'') "
+                "as full_address FROM Customers ORDER BY CustomerID").fetchall()
     customers = [
-        {"id": customer[0], "name": customer[1], "full_address": ' '.join(filter(None, customer[2:]))}
+        {"id": customer[0], "name": customer[1], "full_address": customer[2]}
         for customer in customers]
     return {
         "customers": customers
