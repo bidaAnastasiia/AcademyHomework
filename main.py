@@ -48,7 +48,7 @@ async def categories():
     }
 
 
-@app.post("/categories")
+@app.post("/categories", status_code=201)
 async def add_category(category: Category):
     cursor = app.db_connection.execute(
         f"INSERT INTO Categories (CategoryName) VALUES ('{category.name}')"
@@ -65,15 +65,17 @@ async def update_category(category_id: int, category: Category):
     category = app.db_connection.execute("SELECT * FROM Categories WHERE CategoryID = ?", (category_id,))
     if category is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
-    cursor = app.db_connection.execute(
-        "UPDATE Categories SET CategoryName = ? WHERE CategoryID = ?", (
-            category.name, category_id)
-    )
-    app.db_connection.commit()
-    return {
-        "id": cursor.lastrowid,
-        "name": category.name
-    }
+    else:
+        cursor = app.db_connection.execute(
+            "UPDATE Categories SET CategoryName = ? WHERE CategoryID = ?", (
+                category.name, category_id)
+        )
+        app.db_connection.commit()
+        return {
+            "id": cursor.lastrowid,
+            "name": category.name
+        }
+
 
 
 @app.delete("/categories/{category_id}")
@@ -81,11 +83,13 @@ async def delete_category(category_id: int):
     category = app.db_connection.execute("SELECT * FROM Categories WHERE CategoryID = ?", (category_id,))
     if category is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
-    cursor = app.db_connection.execute(
-        "DELETE FROM Categories WHERE CategoryID = ?", (category_id,)
-    )
-    app.db_connection.commit()
-    return {"deleted": cursor.rowcount}
+    else:
+        cursor = app.db_connection.execute(
+            "DELETE FROM Categories WHERE CategoryID = ?", (category_id,)
+        )
+        app.db_connection.commit()
+        return {"deleted": cursor.rowcount}
+
 
 
 
