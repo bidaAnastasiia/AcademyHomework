@@ -41,7 +41,7 @@ async def read_root():
 @app.get("/categories")
 async def categories():
     categories = app.db_connection.execute(
-        "SELECT CategoryID, CategoryName FROM Categories ORDER BY lower(CategoryID)").fetchall()
+        "SELECT CategoryID, CategoryName FROM Categories ORDER BY CategoryID").fetchall()
     categories = [{"id": category[0], "name": category[1]} for category in categories]
     return {
         "categories": categories
@@ -100,7 +100,7 @@ async def customers():
     customers = app.db_connection. \
         execute("SELECT CustomerID, CompanyName, coalesce(Address,'') || ' ' || coalesce(PostalCode,'') || ' ' "
                 "|| coalesce(City,'') || ' ' || coalesce(Country,'') "
-                "as full_address FROM Customers ORDER BY CustomerID").fetchall()
+                "as full_address FROM Customers ORDER BY CustomerID COLLATE NOCASE ASC").fetchall()
     customers = [
         {"id": customer[0], "name": customer[1], "full_address": customer[2]}
         for customer in customers]
@@ -329,5 +329,5 @@ async def get_patient(id: int):
 
 
 
-# if __name__ == "__main__":
-#     uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)
+if __name__ == "__main__":
+    uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)
