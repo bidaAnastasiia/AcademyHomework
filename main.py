@@ -69,6 +69,27 @@ async def products(product_id: int):
         return {"id": product[0], "name": product[1]}
 
 
+@app.get("/products/{product_id}/orders")
+async def products(product_id: int):
+    product = app.db_connection.execute("SELECT ProductID, ProductName FROM Products WHERE ProductID = ?",
+                                        (product_id,)).fetchone()
+    if product is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+    else:
+        orders = app.db_connection.execute("SELECT Products.ProductID, Orders.OrderId,Customers.CompanyName, "
+                                           "[Order Details].Quantity, [Order Details].Quantity*[Order "
+                                           "Details].UnitPrice "
+                                           "as total_price FROM [Order Details] JOIN Orders ON Orders.OrderID "
+                                           "= [Order Details].OrderID JOIN Products ON Products.ProductID "
+                                           "= [Order Details].ProductID JOIN Customers ON Customers.CustomerID "
+                                           "= Orders.CustomerID WHERE Products.ProductID = ? ORDER BY Orders.OrderId",
+                                           (product_id, )).fetchall()
+
+        orders = [{"id": order[1], "customer":order[2], "quantity": str(order[3]), "total_price":str(order[4])}
+                  for order in orders]
+        return {"orders": orders}
+
+
 @app.get("/employees")
 async def employees(order: str = "EmployeeID", limit: int = -1, offset: int = 0):
     if order not in ["EmployeeID", "first_name", "last_name", "city"]:
@@ -255,6 +276,6 @@ async def get_patient(id: int):
         return patient_list[id - 1]
 
 
-#
+
 # if __name__ == "__main__":
 #     uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)
