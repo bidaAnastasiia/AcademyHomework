@@ -74,7 +74,7 @@ async def update_category(category_id: int, category: Category):
         app.db_connection.commit()
         print("PUT NAME: " + category.name)
         return {
-            "id": cursor.lastrowid,
+            "id": category_id,
             "name": category.name
         }
 
