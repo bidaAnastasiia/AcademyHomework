@@ -62,7 +62,10 @@ async def customers():
 async def products(product_id: int):
     product = app.db_connection.execute("SELECT ProductID, ProductName FROM Products WHERE ProductID = ?",
                                         (product_id, )).fetchone()
-    return {"id": product[0], "name": product[1]}
+    if product is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+    else:
+        return {"id": product[0], "name": product[1]}
 
 
 @app.get("/hello")
