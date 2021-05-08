@@ -41,7 +41,7 @@ async def read_root():
 @app.get("/categories")
 async def categories():
     categories = app.db_connection.execute(
-        "SELECT CategoryID, CategoryName FROM Categories ORDER BY CategoryID").fetchall()
+        "SELECT CategoryID, CategoryName FROM Categories ORDER BY lower(CategoryID)").fetchall()
     categories = [{"id": category[0], "name": category[1]} for category in categories]
     return {
         "categories": categories
