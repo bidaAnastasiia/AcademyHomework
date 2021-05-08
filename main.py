@@ -37,7 +37,8 @@ async def read_root():
 
 @app.get("/categories")
 async def categories():
-    categories = app.db_connection.execute("SELECT CategoryID, CategoryName FROM Categories ORDER BY CategoryID").fetchall()
+    categories = app.db_connection.execute(
+        "SELECT CategoryID, CategoryName FROM Categories ORDER BY CategoryID").fetchall()
     categories = [{"id": category[0], "name": category[1]} for category in categories]
     return {
         "categories": categories
@@ -61,7 +62,7 @@ async def customers():
 @app.get("/products/{product_id}")
 async def products(product_id: int):
     product = app.db_connection.execute("SELECT ProductID, ProductName FROM Products WHERE ProductID = ?",
-                                        (product_id, )).fetchone()
+                                        (product_id,)).fetchone()
     if product is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
     else:
@@ -73,12 +74,23 @@ async def employees(order: str = "EmployeeID", limit: int = -1, offset: int = 0)
     if order not in ["EmployeeID", "first_name", "last_name", "city"]:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
     employees = app.db_connection.execute(
-        "SELECT EmployeeID,LastName as last_name,FirstName as first_name,City FROM Employees ORDER BY "+order+" LIMIT ? OFFSET ?",
+        "SELECT EmployeeID,LastName as last_name,FirstName as first_name,City FROM Employees ORDER BY " + order + " LIMIT ? OFFSET ?",
         (limit, offset)).fetchall()
 
-    employees = [{"id": employee[0], "last_name": employee[1], "first_name":employee[2], "city": employee[3]}
+    employees = [{"id": employee[0], "last_name": employee[1], "first_name": employee[2], "city": employee[3]}
                  for employee in employees]
     return {"employees": employees}
+
+
+@app.get("/products_extended")
+async def products_extended():
+    products = app.db_connection.execute("SELECT Products.ProductID, Products.ProductName, Categories.CategoryName,"
+                                         "Suppliers.CompanyName FROM Products JOIN Categories ON Products.CategoryID "
+                                         "= Categories.CategoryID JOIN Suppliers ON Products.SupplierID "
+                                         "= Suppliers.SupplierID ").fetchall()
+    products = [{"id": product[0], "name": product[1], "category": product[2], "supplier": product[3]} for product in
+                products]
+    return {"products_extended":products}
 
 
 @app.get("/hello")
@@ -241,6 +253,7 @@ async def get_patient(id: int):
         return Response(status_code=status.HTTP_404_NOT_FOUND)
     else:
         return patient_list[id - 1]
+
 
 #
 # if __name__ == "__main__":
