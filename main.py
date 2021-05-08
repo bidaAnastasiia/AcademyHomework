@@ -1,5 +1,7 @@
 import hashlib
 from datetime import date, timedelta
+
+import uvicorn
 from fastapi import FastAPI, Request, Response, status, Depends, HTTPException, Cookie
 from pydantic import BaseModel
 from fastapi.templating import Jinja2Templates
@@ -7,6 +9,7 @@ from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from starlette.responses import PlainTextResponse, RedirectResponse
 import random
 import string
+import sqlite3
 
 app = FastAPI()
 templates = Jinja2Templates(directory="templates")
@@ -15,9 +18,43 @@ app.secret_key = "dfhbsrjke463gjgbhfr43yhygf76jkn"
 app.access_tokens = []
 app.token_values = []
 
+
+@app.on_event("startup")
+async def startup():
+    app.db_connection = sqlite3.connect("northwind.db")
+    app.db_connection.text_factory = lambda b: b.decode(errors="ignore")  # northwind specific
+
+
+@app.on_event("shutdown")
+async def shutdown():
+    app.db_connection.close()
+
+
 @app.get("/")
 async def read_root():
     return {'message': 'Hello world!'}
+
+
+@app.get("/categories")
+async def products():
+    categories = app.db_connection.execute("SELECT CategoryID, CategoryName FROM Categories").fetchall()
+    categories = [{"id": category[0], "name": category[1]} for category in categories]
+    return {
+        "categories": categories
+    }
+
+
+@app.get("/customers")
+async def products():
+    customers = app.db_connection. \
+        execute("SELECT CustomerID, CompanyName, Address, PostalCode, City, Country FROM Customers").fetchall()
+    customers = [
+        {"id": customer[0], "name": customer[1], "full_address": str(customer[2]) + " " + str(customer[3]) + " "
+                                                                 + str(customer[4]) + " " + str(customer[5])}
+        for customer in customers]
+    return {
+        "customers": customers
+    }
 
 
 @app.get("/hello")
@@ -37,7 +74,7 @@ def login(response: Response, credentials: HTTPBasicCredentials = Depends(securi
         if len(app.access_tokens) == 3:
             app.access_tokens = app.access_tokens[1:]
         app.access_tokens.append(session_token)
-        print("GENERATE SESSION: "+ session_token)
+        print("GENERATE SESSION: " + session_token)
         response.set_cookie(key="session_token", value=session_token)
 
 
@@ -69,7 +106,7 @@ def welcome(*, request: Request, session_token: str = Cookie(None), format: str 
 
 
 @app.get("/welcome_token")
-def welcome(*,request: Request, token: str = "default", format: str = ""):
+def welcome(*, request: Request, token: str = "default", format: str = ""):
     if token not in app.token_values:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
     else:
@@ -87,7 +124,7 @@ def delete_session(session_token: str = Cookie(None), format: str = ""):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
     else:
         app.access_tokens.remove(session_token)
-        response = RedirectResponse(url='/logged_out?format='+format,  status_code=status.HTTP_302_FOUND)
+        response = RedirectResponse(url='/logged_out?format=' + format, status_code=status.HTTP_302_FOUND)
         return response
 
 
@@ -102,7 +139,7 @@ def delete_token(token: str = "default", format: str = ""):
 
 
 @app.get("/logged_out")
-def logged_out(request: Request,format:str = ""):
+def logged_out(request: Request, format: str = ""):
     if format == "json":
         return {"message": "Logged out!"}
     elif format == "html":
@@ -179,4 +216,8 @@ async def get_patient(id: int):
     if id > len(patient_list):
         return Response(status_code=status.HTTP_404_NOT_FOUND)
     else:
-        return patient_list[id-1]
+        return patient_list[id - 1]
+
+
+# if __name__ == "__main__":
+#     uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)
