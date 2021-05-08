@@ -68,6 +68,19 @@ async def products(product_id: int):
         return {"id": product[0], "name": product[1]}
 
 
+@app.get("/employees")
+async def employees(order: str = "EmployeeID", limit: int = -1, offset: int = 0):
+    if order not in ["EmployeeID", "first_name", "last_name", "city"]:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
+    employees = app.db_connection.execute(
+        "SELECT EmployeeID,LastName as last_name,FirstName as first_name,City FROM Employees ORDER BY "+order+" LIMIT ? OFFSET ?",
+        (limit, offset)).fetchall()
+
+    employees = [{"id": employee[0], "last_name": employee[1], "first_name":employee[2], "city": employee[3]}
+                 for employee in employees]
+    return {"employees": employees}
+
+
 @app.get("/hello")
 def hello_html(request: Request):
     return templates.TemplateResponse("index.html.j2", {
