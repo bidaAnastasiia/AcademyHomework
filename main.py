@@ -54,6 +54,7 @@ async def add_category(category: Category):
         f"INSERT INTO Categories (CategoryName) VALUES ('{category.name}')"
     )
     app.db_connection.commit()
+    print("POST NAME: "+category.name)
     return {
         "id": cursor.lastrowid,
         "name": category.name
@@ -71,6 +72,7 @@ async def update_category(category_id: int, category: Category):
                 category.name, category_id)
         )
         app.db_connection.commit()
+        print("PUT NAME: " + category.name)
         return {
             "id": cursor.lastrowid,
             "name": category.name
