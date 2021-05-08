@@ -62,7 +62,7 @@ async def add_category(category: Category):
 
 @app.put("/categories/{category_id}")
 async def update_category(category_id: int, category: Category):
-    categorytest = app.db_connection.execute("SELECT * FROM Categories WHERE CategoryID = ?", (category_id,))
+    categorytest = app.db_connection.execute("SELECT * FROM Categories WHERE CategoryID = ?", (category_id,)).fetchone()
     if categorytest is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
     else:
@@ -80,7 +80,7 @@ async def update_category(category_id: int, category: Category):
 
 @app.delete("/categories/{category_id}")
 async def delete_category(category_id: int):
-    category = app.db_connection.execute("SELECT * FROM Categories WHERE CategoryID = ?", (category_id,))
+    category = app.db_connection.execute("SELECT * FROM Categories WHERE CategoryID = ?", (category_id,)).fetchone()
     if category is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
     else:
