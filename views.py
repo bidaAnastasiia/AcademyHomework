@@ -66,7 +66,7 @@ async def add_supplier(supplier: schemas.Supplier, db: Session = Depends(get_db)
 async def update_supplier(supplier_id: PositiveInt, supplier: dict, db: Session = Depends(get_db)):
     db_supplier = crud.get_supplier(db, supplier_id)
     if db_supplier is None:
-        raise HTTPException(status_code=401, detail="Supplier not found")
+        raise HTTPException(status_code=404, detail="Supplier not found")
     else:
         crud.update_supplier(db, supplier, supplier_id)
         db.commit()
@@ -78,7 +78,7 @@ async def update_supplier(supplier_id: PositiveInt, supplier: dict, db: Session 
 async def delete_supplier(supplier_id: PositiveInt, db: Session = Depends(get_db)):
     db_supplier = crud.get_supplier(db, supplier_id)
     if db_supplier is None:
-        raise HTTPException(status_code=401, detail="Supplier not found")
+        raise HTTPException(status_code=404, detail="Supplier not found")
     else:
         crud.delete_supplier(db,supplier_id)
         db.commit()
