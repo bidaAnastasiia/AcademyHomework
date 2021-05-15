@@ -7,10 +7,10 @@ from sqlalchemy import (
     SmallInteger,
     String,
     Table,
-    Text,
+    Text, Sequence,
 )
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.sql.sqltypes import NullType, CHAR
+from sqlalchemy.sql.sqltypes import NullType
 
 Base = declarative_base()
 metadata = Base.metadata
@@ -42,7 +42,7 @@ class Customerdemographic(Base):
 class Customer(Base):
     __tablename__ = "customers"
 
-    CustomerID = Column(CHAR(6), primary_key=True)
+    CustomerID = Column(NullType, primary_key=True)
     CompanyName = Column(String(40), nullable=False)
     ContactName = Column(String(30))
     ContactTitle = Column(String(30))
@@ -155,7 +155,7 @@ class ShippersTmp(Base):
 class Supplier(Base):
     __tablename__ = "suppliers"
 
-    SupplierID = Column(SmallInteger, primary_key=True)
+    SupplierID = Column(Integer, primary_key=True, autoincrement=True)
     CompanyName = Column(String(40), nullable=False)
     ContactName = Column(String(30))
     ContactTitle = Column(String(30))
