@@ -59,7 +59,7 @@ async def add_supplier(supplier: schemas.Supplier, db: Session = Depends(get_db)
     db.commit()
     supplier_id = crud.get_last_Supplier(db).SupplierID
     db_supplier = crud.get_supplier(db, supplier_id)
-    return {db_supplier}
+    return db_supplier
 
 
 @router.put("/suppliers/{supplier_id}")
@@ -71,7 +71,7 @@ async def update_supplier(supplier_id: PositiveInt, supplier: dict, db: Session 
         crud.update_supplier(db, supplier, supplier_id)
         db.commit()
         db_supplier = crud.get_supplier(db, supplier_id)
-        return {db_supplier}
+        return db_supplier
 
 
 @router.delete("/suppliers/{supplier_id}", status_code=204)
