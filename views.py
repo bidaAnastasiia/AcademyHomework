@@ -68,8 +68,9 @@ async def update_supplier(supplier_id: PositiveInt, supplier: dict, db: Session 
     if db_supplier is None:
         raise HTTPException(status_code=404, detail="Supplier not found")
     else:
-        crud.update_supplier(db, supplier, supplier_id)
-        db.commit()
+        if supplier != {}:
+            crud.update_supplier(db, supplier, supplier_id)
+            db.commit()
         db_supplier = crud.get_supplier(db, supplier_id)
         return db_supplier
 
