@@ -7,6 +7,7 @@ from pydantic import BaseModel
 from fastapi.templating import Jinja2Templates
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from starlette.responses import PlainTextResponse, RedirectResponse
+from .views import router as northwind_api_router
 import random
 import string
 import sqlite3
@@ -17,6 +18,7 @@ security = HTTPBasic()
 app.secret_key = "dfhbsrjke463gjgbhfr43yhygf76jkn"
 app.access_tokens = []
 app.token_values = []
+app.include_router(northwind_api_router, tags=["northwind"])
 
 class Category(BaseModel):
     name: str
