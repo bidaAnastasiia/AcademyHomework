@@ -7,7 +7,7 @@ from pydantic import BaseModel
 from fastapi.templating import Jinja2Templates
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from starlette.responses import PlainTextResponse, RedirectResponse
-from .views import router as northwind_api_router
+from views import router as northwind_api_router
 import random
 import string
 import sqlite3
